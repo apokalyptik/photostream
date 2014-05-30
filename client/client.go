@@ -85,32 +85,26 @@ func (c *Client) Feed() (*WebStream, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(1)
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("unexpected response: %s", resp.Status)
 	}
-	fmt.Println(2)
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(3)
 
 	err = json.Unmarshal(data, &feed)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(4)
 	decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
 		WeaklyTypedInput: true,
 		Result:           webstream,
 	})
-	fmt.Println(5)
 	err = decoder.Decode(feed)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(6)
 	webstream.client = c
 	webstream.init()
 	return webstream, nil
