@@ -12,6 +12,7 @@ type request struct {
 }
 
 var fetch = make(chan request)
+var cacheDuration = time.Duration(5 * time.Minute)
 
 func mindEngine() {
 	var cache = make(map[string]*cacheEntry)
@@ -31,7 +32,7 @@ func mindEngine() {
 			}
 		case <-cacheCleanTicker:
 			for k, v := range cache {
-				if time.Since(v.birth) > time.Duration(5*time.Minute) {
+				if time.Since(v.birth) > cacheDuration {
 					delete(cache, k)
 				}
 			}

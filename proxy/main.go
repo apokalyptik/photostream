@@ -14,6 +14,7 @@ var listenHttp = "0.0.0.0:8881"
 
 func init() {
 	flag.StringVar(&listenHttp, "http", listenHttp, "http address and port number to listen on")
+	flag.DurationVar(&cacheDuration, "cache", cacheDuration, "keep items in the local cache for this long")
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
