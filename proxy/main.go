@@ -252,7 +252,7 @@ func main() {
 	r.HandleFunc("/{stream:[0-9a-zA-Z]+}.json", handleStream)
 	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/{group:[0-9a-zA-Z-]+}.json", handleGroup)
 	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/{group:[0-9a-zA-Z-]+}/{media:[0-9a-zA-Z-]+}.json", handleImage)
-	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/{group:[0-9a-zA-Z-]+}/{media:[0-9a-zA-Z-]+}/{version}", handleVersion)
+	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/{group:[0-9a-zA-Z-]+}/{media:[0-9a-zA-Z-]+}/{version}.json", handleVersion)
 	r.PathPrefix("/").HandlerFunc(handleNotFound)
 	log.Fatal(http.ListenAndServe(listenHttp, r))
 }

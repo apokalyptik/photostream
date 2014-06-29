@@ -12,7 +12,6 @@ type cacheEntry struct {
 	birth  time.Time
 	client *photostream.Client
 	stream *photostream.WebStream
-	assets *photostream.Assets
 }
 
 func (c *cacheEntry) getStream() (*photostream.WebStream, error) {
