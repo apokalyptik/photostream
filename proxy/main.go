@@ -30,7 +30,12 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 		</head>
 		<body>
 <pre>
+GET /
+	Human readable API instructions
+
 GET /{stream}.json
+	Fetch JSON data about the stream including group identifiers (which happen to 
+	be GUIDs)
 	{
 		"Name":"the stream name",
 		"FirstName":"the stream author firstname",
@@ -38,7 +43,9 @@ GET /{stream}.json
 		"Groups": ["first group","second group","etc..."]
 	}
 
-GET /{stream}/{group}.json
+GET /{stream}/g/{group}.json
+	Fetch JSON data about a specific group by its GUID including photo identifiers
+	(also GUIDs)
 	{
 		"Created":"media group creation time",
 		"Guid":"media group guid",
@@ -49,7 +56,8 @@ GET /{stream}/{group}.json
 		"Media":["first item","second item","etc"]
 	}
 
-GET /{stream}/{group}/{item}.json
+GET /{stream}/m/{item}.json
+	Fetch JSON data about a specific media item by its GUID
 	{
 		"GUID":"media guid",
 		"Type":"media type",
@@ -73,7 +81,9 @@ GET /{stream}/{group}/{item}.json
 		}
 	}
 
-GET /{stream}/{group}/{media}/{derivative}.json
+GET /{stream}/m/{media}/{derivative}.json
+	Fetch a JSON list of URLs for a particular derivative.  These signed URLs are
+	only valid for a window of time, so fetch them when you are about to use them
 	["first url","second url","etc"]
 
 </pre>
@@ -265,9 +275,9 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleIndex)
 	r.HandleFunc("/{stream:[0-9a-zA-Z]+}.json", handleStream)
-	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/{group:[0-9a-zA-Z-]+}.json", handleGroup)
-	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/{group:[0-9a-zA-Z-]+}/{media:[0-9a-zA-Z-]+}.json", handleImage)
-	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/{group:[0-9a-zA-Z-]+}/{media:[0-9a-zA-Z-]+}/{version}.json", handleVersion)
+	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/g/{group:[0-9a-zA-Z-]+}.json", handleGroup)
+	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/m/{media:[0-9a-zA-Z-]+}.json", handleImage)
+	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/m/{media:[0-9a-zA-Z-]+}/{version}.json", handleVersion)
 	r.PathPrefix("/").HandlerFunc(handleNotFound)
 	log.Fatal(http.ListenAndServe(listenHttp, r))
 }
