@@ -14,7 +14,12 @@ Usage of proxy:
 
 # client usage
 
+#### GET /
+	Human readable API instructions
+
 #### GET /{stream}.json
+	Fetch JSON data about the stream including group identifiers (which happen to 
+	be GUIDs)
 ```json
 	{
 		"Name":"the stream name",
@@ -24,7 +29,9 @@ Usage of proxy:
 	}
 ```
 
-#### GET /{stream}/{group}.json
+#### GET /{stream}/g/{group}.json
+	Fetch JSON data about a specific group by its GUID including photo identifiers
+	(also GUIDs)
 ```json
 	{
 		"Created":"media group creation time",
@@ -37,7 +44,8 @@ Usage of proxy:
 	}
 ```
 
-#### GET /{stream}/{group}/{item}.json
+#### GET /{stream}/m/{item}.json
+	Fetch JSON data about a specific media item by its GUID
 ```json
 	{
 		"GUID":"media guid",
@@ -63,7 +71,9 @@ Usage of proxy:
 	}
 ```
 
-#### GET /{stream}/{group}/{media}/{derivative}.json
+#### GET /{stream}/m/{media}/{derivative}.json
+	Fetch a JSON list of URLs for a particular derivative.  These signed URLs are
+	only valid for a window of time, so fetch them when you are about to use them
 ```json
 	["first url","second url","etc"]
 ```
