@@ -8,13 +8,12 @@ import (
 	"github.com/apokalyptik/gopid"
 )
 
-var listenHttp = "0.0.0.0:8881"
 var pidFile = ""
 var uid = 0
 var gid = 0
 
 func init() {
-	flag.StringVar(&listenHttp, "http", listenHttp, "http address and port number to listen on")
+	flag.StringVar(&listenHTTP, "http", listenHTTP, "http address and port number to listen on")
 	flag.StringVar(&pidFile, "pid", pidFile, "file to lock and write our PID to (empty string disables)")
 	flag.DurationVar(&cacheDuration, "cache", cacheDuration, "keep items in the local cache for this long")
 	flag.IntVar(&uid, "uid", uid, "set UID (0 disables)")
@@ -39,5 +38,5 @@ func main() {
 		}
 	}
 	go mindEngine()
-	mindHttp()
+	mindHTTP()
 }

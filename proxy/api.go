@@ -151,9 +151,8 @@ func handleVersion(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 				return
-			} else {
-				break
 			}
+			break
 		}
 	}
 	handleError(w, r, fmt.Errorf("not found"), 404)

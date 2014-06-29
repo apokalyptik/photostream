@@ -8,7 +8,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func mindHttp() {
+var listenHTTP = "0.0.0.0:8881"
+
+func mindHTTP() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleIndex)
 	r.HandleFunc("/{stream:[0-9a-zA-Z]+}.json", handleStream)
@@ -16,7 +18,7 @@ func mindHttp() {
 	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/m/{media:[0-9a-zA-Z-]+}.json", handleImage)
 	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/m/{media:[0-9a-zA-Z-]+}/{version}.json", handleVersion)
 	r.PathPrefix("/").HandlerFunc(handleNotFound)
-	log.Fatal(http.ListenAndServe(listenHttp, r))
+	log.Fatal(http.ListenAndServe(listenHTTP, r))
 }
 
 func handleError(w http.ResponseWriter, r *http.Request, err error, code ...int) {
