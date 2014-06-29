@@ -6,15 +6,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"syscall"
 
 	"github.com/gorilla/mux"
 )
 
 var listenHttp = "0.0.0.0:8881"
+var uid = 0
+var gid = 0
 
 func init() {
 	flag.StringVar(&listenHttp, "http", listenHttp, "http address and port number to listen on")
 	flag.DurationVar(&cacheDuration, "cache", cacheDuration, "keep items in the local cache for this long")
+	flag.IntVar(&uid, "uid", uid, "set UID (0 disables)")
+	flag.IntVar(&gid, "gid", gid, "set GID (0 disables)")
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
@@ -246,6 +251,16 @@ func handleVersion(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+	if uid != 0 {
+		if err := syscall.Setuid(uid); err != nil {
+			log.Fatal(err)
+		}
+	}
+	if gid != 0 {
+		if err := syscall.Setgid(gid); err != nil {
+			log.Fatal(err)
+		}
+	}
 	go mindEngine()
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleIndex)

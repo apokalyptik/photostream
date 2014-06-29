@@ -7,7 +7,9 @@ A web based proxy to make consuming public photostreams super easy
 ```
 Usage of proxy:
   -cache=5m0s: keep items in the local cache for this long
+  -gid=0: set GID (0 disables)
   -http="0.0.0.0:8881": http address and port number to listen on
+  -uid=0: set UID (0 disables)
 ```
 
 = client usage
