@@ -14,16 +14,18 @@ Usage of proxy:
 
 = client usage
 
-```
-GET /{stream}.json
+== GET /{stream}.json
+```json
 	{
 		"Name":"the stream name",
 		"FirstName":"the stream author firstname",
 		"LastName":"the stream author lastname",
 		"Groups": ["first group","second group","etc..."]
 	}
+```
 
-GET /{stream}/{group}.json
+== GET /{stream}/{group}.json
+```json
 	{
 		"Created":"media group creation time",
 		"Guid":"media group guid",
@@ -33,8 +35,10 @@ GET /{stream}/{group}.json
 		"LastName":"submitter last name",
 		"Media":["first item","second item","etc"]
 	}
+```
 
-GET /{stream}/{group}/{item}.json
+== GET /{stream}/{group}/{item}.json
+```json
 	{
 		"GUID":"media guid",
 		"Type":"media type",
@@ -57,7 +61,9 @@ GET /{stream}/{group}/{item}.json
 			"etc": {},
 		}
 	}
+```
 
-GET /{stream}/{group}/{media}/{derivative}.json
+== GET /{stream}/{group}/{media}/{derivative}.json
+```json
 	["first url","second url","etc"]
 ```
