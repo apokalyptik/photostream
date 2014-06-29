@@ -251,13 +251,13 @@ func handleVersion(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
-	if uid != 0 {
-		if err := syscall.Setuid(uid); err != nil {
+	if gid != 0 {
+		if err := syscall.Setgid(gid); err != nil {
 			log.Fatal(err)
 		}
 	}
-	if gid != 0 {
-		if err := syscall.Setgid(gid); err != nil {
+	if uid != 0 {
+		if err := syscall.Setuid(uid); err != nil {
 			log.Fatal(err)
 		}
 	}
