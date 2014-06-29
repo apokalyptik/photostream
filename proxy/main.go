@@ -73,7 +73,7 @@ GET /{stream}/{group}/{item}.json
 		}
 	}
 
-GET /{stream}/{group}/{media}/{derivative}
+GET /{stream}/{group}/{media}/{derivative}.json
 	["first url","second url","etc"]
 
 </pre>
