@@ -2,7 +2,7 @@ Photostream Proxy
 =================
 A web based proxy to make consuming public photostreams super easy
 
-= server usage
+# server usage
 
 ```
 Usage of proxy:
@@ -12,9 +12,9 @@ Usage of proxy:
   -uid=0: set UID (0 disables)
 ```
 
-= client usage
+# client usage
 
-== GET /{stream}.json
+#### GET /{stream}.json
 ```json
 	{
 		"Name":"the stream name",
@@ -24,7 +24,7 @@ Usage of proxy:
 	}
 ```
 
-== GET /{stream}/{group}.json
+#### GET /{stream}/{group}.json
 ```json
 	{
 		"Created":"media group creation time",
@@ -37,7 +37,7 @@ Usage of proxy:
 	}
 ```
 
-== GET /{stream}/{group}/{item}.json
+#### GET /{stream}/{group}/{item}.json
 ```json
 	{
 		"GUID":"media guid",
@@ -63,7 +63,7 @@ Usage of proxy:
 	}
 ```
 
-== GET /{stream}/{group}/{media}/{derivative}.json
+#### GET /{stream}/{group}/{media}/{derivative}.json
 ```json
 	["first url","second url","etc"]
 ```
