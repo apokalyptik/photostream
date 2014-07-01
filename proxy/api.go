@@ -1,27 +1,30 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func handleStream(w http.ResponseWriter, r *http.Request) {
-	var vars = mux.Vars(r)
+func handleStream(c *gin.Context) {
+	var reqstream = c.Params.ByName("stream")
+	if reqstream[len(reqstream)-5:] != ".json" {
+		c.String(http.StatusNotFound, "not found")
+		return
+	}
+	reqstream = reqstream[:len(reqstream)-5]
 	var reply = make(chan *cacheEntry)
 	fetch <- request{
-		stream:   vars["stream"],
+		stream:   reqstream,
 		response: reply,
 	}
 	var client = <-reply
 	stream, err := client.getStream()
 	if err != nil {
 		if err.Error() == "unexpected response: 404 Not Found" {
-			handleNotFound(w, r)
+			c.String(http.StatusNotFound, "not found")
 		} else {
-			handleError(w, r, err)
+			c.String(http.StatusInternalServerError, err.Error())
 		}
 		return
 	}
@@ -41,25 +44,26 @@ func handleStream(w http.ResponseWriter, r *http.Request) {
 		}
 		rsp.Groups = append(rsp.Groups, v.BatchGuid)
 	}
-	if bytes, err := json.Marshal(rsp); err != nil {
-		handleError(w, r, err)
-	} else {
-		logAccess(w, r)
-		w.Write(bytes)
-	}
+	c.JSON(200, rsp)
 }
 
-func handleGroup(w http.ResponseWriter, r *http.Request) {
-	var vars = mux.Vars(r)
+func handleGroup(c *gin.Context) {
+	var reqstream = c.Params.ByName("stream")
+	var reqgroup = c.Params.ByName("group")
+	if reqgroup[len(reqgroup)-5:] != ".json" {
+		c.String(http.StatusNotFound, "not found")
+		return
+	}
+	reqgroup = reqgroup[:len(reqgroup)-5]
 	var reply = make(chan *cacheEntry)
 	fetch <- request{
-		stream:   vars["stream"],
+		stream:   reqstream,
 		response: reply,
 	}
 	var client = <-reply
 	stream, err := client.getStream()
 	if err != nil {
-		handleError(w, r, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 	var rsp = struct {
@@ -72,7 +76,7 @@ func handleGroup(w http.ResponseWriter, r *http.Request) {
 		Media     []string
 	}{}
 	for k, v := range stream.Media {
-		if v.BatchGuid != vars["group"] {
+		if v.BatchGuid != reqgroup {
 			continue
 		}
 		rsp.Media = append(rsp.Media, v.GUID)
@@ -87,73 +91,72 @@ func handleGroup(w http.ResponseWriter, r *http.Request) {
 		rsp.LastName = v.LastName
 	}
 	if rsp.Media == nil {
-		handleNotFound(w, r)
+		c.String(http.StatusNotFound, "not found")
 		return
 	}
-	if bytes, err := json.Marshal(rsp); err != nil {
-		handleError(w, r, err)
-	} else {
-		logAccess(w, r)
-		w.Write(bytes)
-	}
+	c.JSON(200, rsp)
 }
 
-func handleImage(w http.ResponseWriter, r *http.Request) {
-	var vars = mux.Vars(r)
+func handleMedia(c *gin.Context) {
+	var reqstream = c.Params.ByName("stream")
+	var reqmedia = c.Params.ByName("media")
+	if reqmedia[len(reqmedia)-5:] != ".json" {
+		c.String(http.StatusNotFound, "not found")
+		return
+	}
+	reqmedia = reqmedia[:len(reqmedia)-5]
 	var reply = make(chan *cacheEntry)
 	fetch <- request{
-		stream:   vars["stream"],
+		stream:   reqstream,
 		response: reply,
 	}
 	var client = <-reply
 	stream, err := client.getStream()
 	if err != nil {
-		handleError(w, r, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 	for _, v := range stream.Media {
-		if v.GUID == vars["media"] {
-			if bytes, err := json.Marshal(v); err != nil {
-				handleError(w, r, err)
-			} else {
-				logAccess(w, r)
-				w.Write(bytes)
-			}
+		if v.GUID == reqmedia {
+			c.JSON(200, v)
 			return
 		}
 	}
-	handleError(w, r, fmt.Errorf("not found"), 404)
+	c.String(http.StatusNotFound, "not found")
 }
-func handleVersion(w http.ResponseWriter, r *http.Request) {
-	var vars = mux.Vars(r)
+
+func handleVersion(c *gin.Context) {
+	var reqstream = c.Params.ByName("stream")
+	var reqmedia = c.Params.ByName("media")
+	var reqversion = c.Params.ByName("version")
+	if reqversion[len(reqversion)-5:] != ".json" {
+		c.String(http.StatusNotFound, "not found")
+		return
+	}
+	reqversion = reqversion[:len(reqversion)-5]
 	var reply = make(chan *cacheEntry)
 	fetch <- request{
-		stream:   vars["stream"],
+		stream:   reqstream,
 		response: reply,
 	}
 	var client = <-reply
 	stream, err := client.getStream()
 	if err != nil {
-		handleError(w, r, err)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 	for _, v := range stream.Media {
-		if v.GUID == vars["media"] {
-			if d, ok := v.Derivatives[vars["version"]]; ok {
+		if v.GUID == reqmedia {
+			if d, ok := v.Derivatives[reqversion]; ok {
 				if u, e := d.GetURLs(); e != nil {
-					handleError(w, r, e)
+					c.String(http.StatusInternalServerError, e.Error())
 				} else {
-					if bytes, err := json.Marshal(u); err != nil {
-						handleError(w, r, err)
-					} else {
-						logAccess(w, r)
-						w.Write(bytes)
-					}
+					c.JSON(200, u)
 				}
 				return
 			}
 			break
 		}
 	}
-	handleError(w, r, fmt.Errorf("not found"), 404)
+	c.String(http.StatusNotFound, "not found")
 }

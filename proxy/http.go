@@ -1,46 +1,21 @@
 package main
 
-import (
-	"fmt"
-	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
-)
+import "github.com/gin-gonic/gin"
 
 var listenHTTP = "0.0.0.0:8881"
 
 func mindHTTP() {
-	r := mux.NewRouter()
-	r.HandleFunc("/", handleIndex)
-	r.HandleFunc("/{stream:[0-9a-zA-Z]+}.json", handleStream)
-	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/g/{group:[0-9a-zA-Z-]+}.json", handleGroup)
-	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/m/{media:[0-9a-zA-Z-]+}.json", handleImage)
-	r.HandleFunc("/{stream:[0-9a-zA-Z]+}/m/{media:[0-9a-zA-Z-]+}/{version}.json", handleVersion)
-	r.PathPrefix("/").HandlerFunc(handleNotFound)
-	log.Fatal(http.ListenAndServe(listenHTTP, r))
+	r := gin.Default()
+	r.GET("/", handleIndex)
+	r.GET("/:stream", handleStream)
+	r.GET("/:stream/g/:group", handleGroup)
+	r.GET("/:stream/m/:media", handleMedia)
+	r.GET("/:stream/m/:media/:version", handleVersion)
+	r.Run(listenHTTP)
 }
 
-func handleError(w http.ResponseWriter, r *http.Request, err error, code ...int) {
-	if len(code) == 0 {
-		code = []int{http.StatusInternalServerError}
-	}
-	log.Printf("\"%s\" \"%s %s\" %d \"%s\"", r.RemoteAddr, r.Method, r.URL.RequestURI(), code[0], err.Error())
-	w.WriteHeader(code[0])
-	fmt.Fprint(w, err.Error())
-}
-
-func logAccess(w http.ResponseWriter, r *http.Request) {
-	log.Printf("\"%s\" \"%s %s\" 200 \"OK\"", r.RemoteAddr, r.Method, r.URL.RequestURI())
-}
-
-func handleNotFound(w http.ResponseWriter, r *http.Request) {
-	handleError(w, r, fmt.Errorf("not found"), 404)
-}
-
-func handleIndex(w http.ResponseWriter, r *http.Request) {
-	logAccess(w, r)
-	fmt.Fprint(w,
+func handleIndex(c *gin.Context) {
+	c.String(200,
 		`<html>
 		<head>
 		</head>
